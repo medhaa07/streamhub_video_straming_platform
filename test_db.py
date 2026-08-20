@@ -1,13 +1,13 @@
-from app import app
+from app import create_app
 from extensions import db
 from sqlalchemy import text
 
+app = create_app()
+
 with app.app_context():
     try:
-        result = db.session.execute(text("SELECT version();"))
-        print("✅ Connected successfully!")
-        print(result.fetchone()[0])
+        db.session.execute(text("SELECT 1"))
+        print("Database connection successful!")
     except Exception as e:
-        print("❌ Connection failed")
-        print(type(e).__name__)
+        print("Database connection failed!")
         print(e)
