@@ -120,6 +120,7 @@ streamhub-video-streaming-platform/
 ├── .env.example
 ├── .gitignore
 └── README.md
+
 ```
 
 > Uploaded videos and generated thumbnails are intentionally excluded from GitHub through `.gitignore`. They are stored locally when the application is running.
@@ -143,12 +144,14 @@ Before running StreamHub, install:
 
 ```bash
 git clone https://github.com/Prathikiee/streamhub-video-streaming-platform.git
+
 ```
 
 Enter the project directory:
 
 ```bash
 cd streamhub-video-streaming-platform
+
 ```
 
 ---
@@ -159,12 +162,14 @@ cd streamhub-video-streaming-platform
 
 ```bash
 python -m venv venv
+
 ```
 
 Activate it:
 
 ```bash
 venv\Scripts\activate
+
 ```
 
 You should see `(venv)` in the command prompt.
@@ -175,6 +180,7 @@ You should see `(venv)` in the command prompt.
 
 ```bash
 pip install -r requirements.txt
+
 ```
 
 ---
@@ -191,6 +197,7 @@ Example:
 
 ```text
 postgresql+psycopg://USERNAME:PASSWORD@HOST:5432/DATABASE_NAME
+
 ```
 
 ---
@@ -209,6 +216,7 @@ SECRET_KEY=your-secret-key
 DATABASE_URL=postgresql+psycopg://USERNAME:PASSWORD@HOST:5432/DATABASE_NAME
 
 FFMPEG_PATH=ffmpeg
+
 ```
 
 ### Important
@@ -231,18 +239,21 @@ Verify the installation:
 
 ```bash
 ffmpeg -version
+
 ```
 
 If FFmpeg is available through the system PATH, use:
 
 ```env
 FFMPEG_PATH=ffmpeg
+
 ```
 
 If FFmpeg is installed in a custom location, provide the path to the executable:
 
 ```env
 FFMPEG_PATH=C:\path\to\ffmpeg.exe
+
 ```
 
 > The project does not depend on the developer's original local FFmpeg path. FFmpeg is configured through the `FFMPEG_PATH` environment variable.
@@ -255,6 +266,7 @@ After configuring PostgreSQL and `.env`, run:
 
 ```bash
 flask db upgrade
+
 ```
 
 This creates or updates the required database tables using the project's Alembic migrations.
@@ -269,12 +281,14 @@ Run:
 
 ```bash
 python test_db.py
+
 ```
 
 A successful connection should display:
 
 ```text
 Database connection successful!
+
 ```
 
 ---
@@ -285,6 +299,7 @@ Start StreamHub:
 
 ```bash
 python run.py
+
 ```
 
 The Flask development server will start.
@@ -293,6 +308,7 @@ Open the application in your browser:
 
 ```text
 http://127.0.0.1:5000
+
 ```
 
 ---
@@ -305,6 +321,7 @@ Open StreamHub and select:
 
 ```text
 Create Account
+
 ```
 
 Register a new user account.
@@ -319,6 +336,7 @@ Open the creator dashboard and select:
 
 ```text
 Upload Video
+
 ```
 
 Provide:
@@ -395,6 +413,7 @@ The following directory is ignored:
 
 ```text
 uploads/
+
 ```
 
 This prevents large video files and user-generated media from being committed to GitHub.
@@ -435,6 +454,7 @@ You can test the connection with:
 
 ```bash
 python test_db.py
+
 ```
 
 ### FFmpeg not found
@@ -443,12 +463,14 @@ Run:
 
 ```bash
 ffmpeg -version
+
 ```
 
 If the command is not recognized, install FFmpeg and either add it to the system PATH or configure its executable location through:
 
 ```env
 FFMPEG_PATH=C:\path\to\ffmpeg.exe
+
 ```
 
 ### Database tables missing
@@ -457,6 +479,7 @@ Run:
 
 ```bash
 flask db upgrade
+
 ```
 
 ---
@@ -473,3 +496,75 @@ Canara Engineering College
 # Project Repository
 
 [StreamHub Video Streaming Platform — GitHub](https://github.com/Prathikiee/streamhub-video-streaming-platform?utm_source=chatgpt.com)
+
+# StreamHub - Video Streaming Platform
+
+StreamHub is a Flask-based video streaming platform containerized with Docker
+and deployed to Microsoft Azure using a fully automated CI/CD pipeline.
+
+## Tech Stack
+
+- Python
+- Flask
+- PostgreSQL / Supabase
+- Docker
+- GitHub
+- Azure DevOps
+- Azure Pipelines
+- Azure Container Registry
+- Azure App Service
+- Gunicorn
+
+## CI/CD Architecture
+
+Developer
+   ↓
+GitHub Repository
+   ↓
+Azure Pipelines
+   ↓
+Docker Image Build
+   ↓
+Azure Container Registry
+   ↓
+Azure App Service
+   ↓
+Production Health Verification
+
+## CI/CD Workflow
+
+Whenever code is pushed to the `main` branch:
+
+1. Azure Pipelines automatically detects the GitHub push.
+2. The application Docker image is built.
+3. The Docker image is pushed to Azure Container Registry.
+4. The new image is deployed to Azure App Service.
+5. The pipeline calls the production `/health` endpoint.
+6. Deployment succeeds only when the application returns a healthy HTTP response.
+
+## Pipeline Stages
+
+### Build
+
+Builds the StreamHub Docker image and pushes two tags:
+
+- Build ID
+- latest
+
+### Deploy
+
+Deploys the newly built Docker image from Azure Container Registry to
+Azure App Service.
+
+### Verify
+
+After deployment, Azure Pipelines calls:
+
+`/health`
+
+Expected response:
+
+```json
+{
+  "status": "healthy"
+}
