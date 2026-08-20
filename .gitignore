@@ -55,6 +55,10 @@ cover/
 *.mo
 *.pot
 
+#videos
+uploads/
+thumbnails/
+
 # Django stuff:
 *.log
 local_settings.py
