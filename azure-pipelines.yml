@@ -13,10 +13,15 @@ variables:
   vmImageName: 'ubuntu-latest'
 
   azureServiceConnection: 'azure-streamhub-deploy'
+  resourceGroupName: 'rg-streamhub-codealpha'
   webAppName: 'streamhub-codealpha'
+
 
 stages:
 
+# =========================================================
+# 1. BUILD
+# =========================================================
 - stage: Build
   displayName: Build and push Docker image
 
@@ -40,6 +45,9 @@ stages:
           latest
 
 
+# =========================================================
+# 2. DEPLOY
+# =========================================================
 - stage: Deploy
   displayName: Deploy to Azure App Service
 
@@ -60,3 +68,77 @@ stages:
         azureSubscription: $(azureServiceConnection)
         appName: $(webAppName)
         containers: '$(containerRegistry)/$(imageRepository):$(tag)'
+
+
+# =========================================================
+# 3. VERIFY
+# =========================================================
+- stage: Verify
+  displayName: Verify production deployment
+
+  dependsOn: Deploy
+  condition: succeeded()
+
+  jobs:
+  - job: HealthCheck
+    displayName: Verify StreamHub health
+
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    - task: AzureCLI@2
+      displayName: Check deployed /health endpoint
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          set -euo pipefail
+
+          echo "Getting StreamHub App Service hostname..."
+
+          HOSTNAME=$(az webapp show \
+            --resource-group "$(resourceGroupName)" \
+            --name "$(webAppName)" \
+            --query defaultHostName \
+            --output tsv)
+
+          HEALTH_URL="https://${HOSTNAME}/health"
+
+          echo "Health endpoint:"
+          echo "${HEALTH_URL}"
+          echo
+          echo "Waiting for deployed container to become healthy..."
+
+          for attempt in {1..12}
+          do
+            HTTP_CODE=$(curl \
+              --silent \
+              --show-error \
+              --output health-response.txt \
+              --write-out "%{http_code}" \
+              "${HEALTH_URL}" || true)
+
+            echo "Attempt ${attempt}/12 - HTTP ${HTTP_CODE}"
+
+            if [[ "${HTTP_CODE}" =~ ^2[0-9][0-9]$ ]]; then
+              echo
+              echo "Health response:"
+              cat health-response.txt
+              echo
+              echo "StreamHub deployment is healthy."
+              exit 0
+            fi
+
+            if [ "${attempt}" -lt 12 ]; then
+              echo "Application is not ready yet. Retrying in 10 seconds..."
+              sleep 10
+            fi
+          done
+
+          echo
+          echo "ERROR: StreamHub failed the production health check."
+          echo "Last response:"
+          cat health-response.txt 2>/dev/null || true
+          exit 1
