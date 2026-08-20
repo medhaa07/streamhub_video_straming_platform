@@ -2,7 +2,7 @@
 
 A full-stack video streaming platform built with **Python Flask, PostgreSQL, Bootstrap, FFmpeg, and AWS S3 integration**.
 
-StreamHub allows users to create accounts, upload videos, automatically generate thumbnails, stream uploaded videos, manage their video library, and receive real-time application notifications.
+StreamHub allows users to create accounts, upload videos, automatically generate thumbnails, stream uploaded videos, manage their video library, and receive application notifications.
 
 ## Features
 
@@ -13,12 +13,13 @@ StreamHub allows users to create accounts, upload videos, automatically generate
 * User login and logout
 * Session management using Flask-Login
 * Protected routes
+* User-specific access control
 
 ### Video Management
 
-* Upload videos
+* Video upload
 * Video format validation
-* Automatic unique video filenames
+* Secure and unique video filenames
 * Automatic thumbnail generation using FFmpeg
 * Video streaming
 * Video view tracking
@@ -34,13 +35,14 @@ StreamHub allows users to create accounts, upload videos, automatically generate
 * Storage information
 * Personal video library
 * Video preview thumbnails
-* Watch and delete controls
+* Watch controls
+* Video deletion controls
 
 ### Notifications
 
 * Automatic upload notifications
-* Notification badge with unread count
-* Custom notification panel
+* Unread notification count
+* Notification dropdown panel
 * Individual notification deletion
 * Clear-all notifications
 * Notification timestamps
@@ -50,10 +52,10 @@ StreamHub allows users to create accounts, upload videos, automatically generate
 * PostgreSQL
 * SQLAlchemy ORM
 * Flask-Migrate / Alembic
-* UUID-based primary keys
-* Database relationships between users, videos, and notifications
+* UUID-based identifiers
+* Relationships between users, videos, and notifications
 
-### UI
+### User Interface
 
 * Responsive Bootstrap interface
 * Custom StreamHub branding
@@ -65,7 +67,7 @@ StreamHub allows users to create accounts, upload videos, automatically generate
 
 ---
 
-## Technology Stack
+# Technology Stack
 
 | Technology              | Purpose                                   |
 | ----------------------- | ----------------------------------------- |
@@ -110,20 +112,17 @@ streamhub-video-streaming-platform/
 │
 ├── templates/
 │
-├── uploads/
-│   ├── videos/
-│   └── thumbnails/
-│
 ├── config.py
 ├── extensions.py
 ├── run.py
+├── test_db.py
 ├── requirements.txt
 ├── .env.example
 ├── .gitignore
 └── README.md
 ```
 
-> The `uploads/` directory is ignored by Git. Uploaded videos and generated thumbnails are stored locally when the application is running.
+> Uploaded videos and generated thumbnails are intentionally excluded from GitHub through `.gitignore`. They are stored locally when the application is running.
 
 ---
 
@@ -131,7 +130,7 @@ streamhub-video-streaming-platform/
 
 Before running StreamHub, install:
 
-* Python 3.14 or compatible Python version
+* Python 3.14 or a compatible Python version
 * PostgreSQL
 * FFmpeg
 * Git
@@ -168,13 +167,7 @@ Activate it:
 venv\Scripts\activate
 ```
 
-You should see:
-
-```text
-(venv)
-```
-
-before your command prompt.
+You should see `(venv)` in the command prompt.
 
 ---
 
@@ -194,7 +187,7 @@ Create a PostgreSQL database and obtain its connection details.
 
 The application expects a `DATABASE_URL` environment variable.
 
-For example:
+Example:
 
 ```text
 postgresql+psycopg://USERNAME:PASSWORD@HOST:5432/DATABASE_NAME
@@ -206,21 +199,9 @@ postgresql+psycopg://USERNAME:PASSWORD@HOST:5432/DATABASE_NAME
 
 Create a `.env` file in the project root.
 
-You can use `.env.example` as a template.
+Use `.env.example` as a template.
 
-Copy:
-
-```text
-.env.example
-```
-
-to:
-
-```text
-.env
-```
-
-Then configure:
+Example:
 
 ```env
 SECRET_KEY=your-secret-key
@@ -232,19 +213,21 @@ FFMPEG_PATH=ffmpeg
 
 ### Important
 
-Never commit `.env` to GitHub.
+Never commit the `.env` file to GitHub.
 
-The `.env` file contains private configuration such as database credentials.
+It may contain private credentials and configuration values.
+
+The repository already includes `.gitignore` rules to prevent `.env` from being committed.
 
 ---
 
 # FFmpeg Setup
 
-StreamHub uses FFmpeg to generate video thumbnails.
+StreamHub uses FFmpeg to generate thumbnails from uploaded videos.
 
-Download and install FFmpeg on the machine running the application.
+Install FFmpeg on the machine running the application.
 
-After installation, verify it:
+Verify the installation:
 
 ```bash
 ffmpeg -version
@@ -256,11 +239,13 @@ If FFmpeg is available through the system PATH, use:
 FFMPEG_PATH=ffmpeg
 ```
 
-If FFmpeg is installed in a custom location, specify the full executable path:
+If FFmpeg is installed in a custom location, provide the path to the executable:
 
 ```env
 FFMPEG_PATH=C:\path\to\ffmpeg.exe
 ```
+
+> The project does not depend on the developer's original local FFmpeg path. FFmpeg is configured through the `FFMPEG_PATH` environment variable.
 
 ---
 
@@ -272,13 +257,31 @@ After configuring PostgreSQL and `.env`, run:
 flask db upgrade
 ```
 
-This creates/updates the required database tables.
+This creates or updates the required database tables using the project's Alembic migrations.
+
+---
+
+# Optional Database Connection Test
+
+The repository includes `test_db.py` to verify PostgreSQL connectivity.
+
+Run:
+
+```bash
+python test_db.py
+```
+
+A successful connection should display:
+
+```text
+Database connection successful!
+```
 
 ---
 
 # Run the Application
 
-Start StreamHub with:
+Start StreamHub:
 
 ```bash
 python run.py
@@ -286,7 +289,7 @@ python run.py
 
 The Flask development server will start.
 
-Open the application in your browser at:
+Open the application in your browser:
 
 ```text
 http://127.0.0.1:5000
@@ -298,17 +301,17 @@ http://127.0.0.1:5000
 
 ## 1. Create an Account
 
-Open the application and select:
+Open StreamHub and select:
 
 ```text
 Create Account
 ```
 
-Register a new user.
+Register a new user account.
 
 ## 2. Login
 
-Log in using your registered credentials.
+Log in using the registered credentials.
 
 ## 3. Upload a Video
 
@@ -326,17 +329,17 @@ Provide:
 * Category
 * Visibility
 
-After upload, StreamHub:
+After uploading, StreamHub:
 
-1. Stores the video.
+1. Stores the uploaded video locally.
 2. Generates a unique filename.
 3. Uses FFmpeg to generate a thumbnail.
-4. Stores the video information in PostgreSQL.
-5. Creates a notification for the user.
+4. Stores video metadata in PostgreSQL.
+5. Creates an application notification.
 
 ## 4. Manage Videos
 
-The dashboard displays the creator's uploaded videos.
+The creator dashboard displays uploaded videos.
 
 Users can:
 
@@ -346,7 +349,7 @@ Users can:
 
 ## 5. Notifications
 
-The notification bell displays recent notifications.
+The notification bell displays application notifications.
 
 Users can:
 
@@ -358,13 +361,13 @@ Users can:
 
 # Database Models
 
-The application currently uses database models for core entities including:
+The application uses database models for core entities including:
 
 * Users
 * Videos
 * Notifications
 
-User IDs and related foreign keys use PostgreSQL UUID types.
+The project uses UUID-based identifiers and relationships between the application's database entities.
 
 ---
 
@@ -378,15 +381,15 @@ The application includes:
 * User-specific notification access
 * User-specific video deletion authorization
 * Secure uploaded filenames
-* File extension validation
+* Video file extension validation
 * Environment-based secrets
 * Database credentials stored outside the source code
 
 ---
 
-# GitHub and Uploaded Media
+# File Storage
 
-Uploaded videos are intentionally excluded from the Git repository.
+Uploaded videos and generated thumbnails are intentionally excluded from the Git repository.
 
 The following directory is ignored:
 
@@ -396,13 +399,13 @@ uploads/
 
 This prevents large video files and user-generated media from being committed to GitHub.
 
-For production deployment, video storage can be moved to cloud storage such as Amazon S3.
+For production deployment, the application's video storage can be moved to cloud object storage such as Amazon S3.
 
 ---
 
 # Development Notes
 
-This project is currently designed to run locally using the Flask development server.
+StreamHub is currently designed to run locally using Flask's development server.
 
 For production deployment, it is recommended to use:
 
@@ -411,8 +414,50 @@ For production deployment, it is recommended to use:
 * Cloud object storage for videos
 * HTTPS
 * Production environment variables
-* Proper production logging
 * Secure cookie configuration
+* Production logging
+* Appropriate file-size and upload restrictions
+
+---
+
+# Troubleshooting
+
+### PostgreSQL connection error
+
+Check that:
+
+1. PostgreSQL is running.
+2. The database exists.
+3. `DATABASE_URL` in `.env` is correct.
+4. The PostgreSQL username and password are correct.
+
+You can test the connection with:
+
+```bash
+python test_db.py
+```
+
+### FFmpeg not found
+
+Run:
+
+```bash
+ffmpeg -version
+```
+
+If the command is not recognized, install FFmpeg and either add it to the system PATH or configure its executable location through:
+
+```env
+FFMPEG_PATH=C:\path\to\ffmpeg.exe
+```
+
+### Database tables missing
+
+Run:
+
+```bash
+flask db upgrade
+```
 
 ---
 
@@ -421,13 +466,10 @@ For production deployment, it is recommended to use:
 **Prathik Kumar P**
 
 Computer Science & Engineering
-
 Canara Engineering College
 
 ---
 
 # Project Repository
 
-GitHub:
-
-https://github.com/Prathikiee/streamhub-video-streaming-platform
+[StreamHub Video Streaming Platform — GitHub](https://github.com/Prathikiee/streamhub-video-streaming-platform?utm_source=chatgpt.com)
