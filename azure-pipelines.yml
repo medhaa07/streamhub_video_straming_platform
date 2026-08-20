@@ -1,0 +1,62 @@
+trigger:
+- main
+
+resources:
+- repo: self
+
+variables:
+  dockerRegistryServiceConnection: '71398397-bb4e-416b-b5c7-949454bb6048'
+  imageRepository: 'streamhub'
+  containerRegistry: 'streamhubacrprathik-fzhjeydyanb3ddg8.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  tag: '$(Build.BuildId)'
+  vmImageName: 'ubuntu-latest'
+
+  azureServiceConnection: 'azure-streamhub-deploy'
+  webAppName: 'streamhub-codealpha'
+
+stages:
+
+- stage: Build
+  displayName: Build and push Docker image
+
+  jobs:
+  - job: Build
+    displayName: Build StreamHub
+
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    - task: Docker@2
+      displayName: Build and push StreamHub image
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+          latest
+
+
+- stage: Deploy
+  displayName: Deploy to Azure App Service
+
+  dependsOn: Build
+  condition: succeeded()
+
+  jobs:
+  - job: Deploy
+    displayName: Deploy StreamHub
+
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    - task: AzureWebAppContainer@1
+      displayName: Deploy StreamHub container
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        appName: $(webAppName)
+        containers: '$(containerRegistry)/$(imageRepository):$(tag)'
