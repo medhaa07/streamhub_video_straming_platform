@@ -55,10 +55,6 @@ cover/
 *.mo
 *.pot
 
-#videos
-uploads/
-thumbnails/
-
 # Django stuff:
 *.log
 local_settings.py
@@ -160,6 +156,9 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# User uploaded media
+uploads/
 
 # Spyder project settings
 .spyderproject
