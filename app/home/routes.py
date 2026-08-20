@@ -8,6 +8,10 @@ home_bp = Blueprint(
     __name__,
 )
 
+@home_bp.route("/health")
+def health():
+    return {"status": "healthy"}, 200
+
 
 @home_bp.route("/")
 def home():
