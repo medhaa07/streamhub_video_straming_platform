@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+
+Search • StreamHub
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<div class="glass p-5 mb-5">
+
+
+<h1>
+
+Search Results
+
+</h1>
+
+
+<p class="opacity-75">
+
+Showing results for "{{query}}"
+
+</p>
+
+
+</div>
+
+
+
+<div class="row g-4">
+
+
+{% for video in videos %}
+
+
+<div class="col-lg-4">
+
+
+<a href="{{url_for('stream.watch',video_id=video.id)}}"
+class="text-decoration-none">
+
+
+<div class="video-card">
+
+
+<img
+src="{{url_for('stream.thumbnail',
+filename=video.thumbnail_filename)}}"
+class="thumbnail">
+
+
+
+<div class="video-content">
+
+
+<h4>
+
+{{video.title}}
+
+</h4>
+
+
+<p>
+
+{{video.category}}
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</a>
+
+
+</div>
+
+
+
+{% else %}
+
+
+<div class="glass empty-state">
+
+<h2>
+
+No videos found
+
+</h2>
+
+</div>
+
+
+{% endfor %}
+
+
+
+</div>
+
+
+
+{% endblock %}

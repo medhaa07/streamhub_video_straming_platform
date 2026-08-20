@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ video.title }}
+{% endblock %}
+
+{% block content %}
+
+<div class="player-layout">
+
+    <div class="player-main">
+
+        <div class="glass video-shell">
+
+            <video
+                class="player-video"
+                controls
+                controlsList="nodownload"
+                autoplay>
+
+                <source
+                    src="{{ url_for('stream.stream_video', video_id=video.id) }}"
+                    type="video/mp4">
+
+            </video>
+
+        </div>
+
+        <div class="glass info-card mt-4">
+
+            <div class="d-flex justify-content-between align-items-start flex-wrap">
+
+                <div>
+
+                    <div class="category-chip mb-3">
+
+                        {{ video.category }}
+
+                    </div>
+
+                    <h1 class="video-title">
+
+                        {{ video.title }}
+
+                    </h1>
+
+                    <div class="video-meta">
+
+                        👁 {{ video.views }} Views
+
+                    </div>
+
+                </div>
+
+                <div class="action-group">
+
+                    <button class="glass-action">
+
+                        👍
+
+                    </button>
+
+                    <button class="glass-action">
+
+                        ❤️
+
+                    </button>
+
+                    <button class="glass-action">
+
+                        🔗
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <hr class="glass-divider">
+
+            <h5>Description</h5>
+
+            <p class="description">
+
+                {{ video.description or "No description available." }}
+
+            </p>
+
+        </div>
+
+    </div>
+
+    <aside class="player-sidebar">
+
+        <div class="glass sidebar-card">
+
+            <h4>
+
+                Up Next
+
+            </h4>
+
+            <div class="coming-soon">
+
+                Smart recommendations
+
+                <br>
+
+                coming soon
+
+            </div>
+
+        </div>
+
+    </aside>
+
+</div>
+
+{% endblock %}

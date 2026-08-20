@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}
+Create Account • StreamHub
+{% endblock %}
+
+{% block content %}
+
+<div class="auth-container">
+
+    <div class="glass auth-card">
+
+        <div class="text-center mb-5">
+
+            <div class="auth-logo">
+
+    <img
+        src="{{ url_for('static', filename='images/logo.png') }}"
+        alt="StreamHub Logo">
+
+</div>
+
+            <h1 class="auth-title">
+
+                Join StreamHub
+
+            </h1>
+
+            <p class="auth-subtitle">
+
+                Create your creator account
+
+            </p>
+
+        </div>
+
+        <form method="POST">
+
+            {{ form.hidden_tag() }}
+
+            <div class="mb-4">
+
+                <label class="glass-label">
+
+                    Username
+
+                </label>
+
+                {{ form.username(
+                    class="glass-input",
+                    placeholder="Choose a username"
+                ) }}
+
+            </div>
+
+            <div class="mb-4">
+
+                <label class="glass-label">
+
+                    Email Address
+
+                </label>
+
+                {{ form.email(
+                    class="glass-input",
+                    placeholder="Enter your email"
+                ) }}
+
+            </div>
+
+            <div class="mb-4">
+
+                <label class="glass-label">
+
+                    Password
+
+                </label>
+
+                {{ form.password(
+                    class="glass-input",
+                    placeholder="Create password"
+                ) }}
+
+            </div>
+
+            <div class="mb-4">
+
+                <label class="glass-label">
+
+                    Confirm Password
+
+                </label>
+
+                {{ form.confirm_password(
+                    class="glass-input",
+                    placeholder="Confirm password"
+                ) }}
+
+            </div>
+
+            {{ form.submit(
+                class="btn btn-primary auth-button w-100"
+            ) }}
+
+        </form>
+
+        <div class="auth-divider">
+
+            <span>
+
+                OR
+
+            </span>
+
+        </div>
+
+        <div class="text-center">
+
+            <p class="mb-0">
+
+                Already have an account?
+
+            </p>
+
+            <a
+                href="{{ url_for('auth.login') }}"
+                class="btn btn-outline-light rounded-pill mt-3 px-4">
+
+                Sign In
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

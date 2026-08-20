@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}
+Upload Video
+{% endblock %}
+
+{% block content %}
+
+<section class="upload-page">
+
+<div class="glass upload-card">
+
+<div class="upload-header">
+
+<div class="upload-logo">
+
+<i class="bi bi-cloud-arrow-up-fill"></i>
+
+</div>
+
+<h1>
+
+Upload Your Video
+
+</h1>
+
+<p>
+
+Publish your content with a beautiful streaming experience.
+
+</p>
+
+</div>
+
+<form method="POST"
+      enctype="multipart/form-data">
+
+{{ form.hidden_tag() }}
+
+<div class="row g-4">
+
+<div class="col-12">
+
+<label class="glass-label">
+
+Video Title
+
+</label>
+
+<div class="input-wrapper">
+
+<i class="bi bi-type"></i>
+
+{{ form.title(
+class="glass-input",
+placeholder="Enter video title"
+) }}
+
+</div>
+
+</div>
+
+<div class="col-12">
+
+<label class="glass-label">
+
+Description
+
+</label>
+
+{{ form.description(
+class="glass-input glass-textarea",
+rows="6",
+placeholder="Tell viewers about this video..."
+) }}
+
+</div>
+
+<div class="col-md-6">
+
+<label class="glass-label">
+
+Category
+
+</label>
+
+<div class="input-wrapper">
+
+<i class="bi bi-collection-play"></i>
+
+{{ form.category(class="glass-select") }}
+
+</div>
+
+</div>
+
+<div class="col-md-6">
+
+<label class="glass-label">
+
+Visibility
+
+</label>
+
+<div class="input-wrapper">
+
+<i class="bi bi-globe2"></i>
+
+{{ form.visibility(class="glass-select") }}
+
+</div>
+
+</div>
+
+<div class="col-12">
+
+<label class="glass-label">
+
+Choose Video
+
+</label>
+
+<label
+class="upload-zone"
+for="videoInput">
+
+{{ form.video(
+id="videoInput",
+class="d-none"
+) }}
+
+<div class="upload-zone-content">
+
+<div class="upload-zone-icon">
+
+<i class="bi bi-cloud-arrow-up-fill"></i>
+
+</div>
+
+<h3>
+
+Drag & Drop Video
+
+</h3>
+
+<p>
+
+or click anywhere to browse
+
+</p>
+
+<div
+class="selected-file"
+id="filename">
+
+No file selected
+
+</div>
+
+</div>
+
+</label>
+
+</div>
+
+<div class="col-12">
+
+<button
+type="submit"
+class="liquid-btn primary upload-submit w-100">
+
+<i class="bi bi-cloud-upload-fill"></i>
+
+<span>
+
+Upload Video
+
+</span>
+
+</button>
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+</section>
+
+<script>
+
+const input=document.getElementById("videoInput");
+
+const filename=document.getElementById("filename");
+
+input.addEventListener("change",()=>{
+
+if(input.files.length){
+
+filename.innerHTML=`<i class="bi bi-film"></i> ${input.files[0].name}`;
+
+}
+
+});
+
+</script>
+
+{% endblock %}

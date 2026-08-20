@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <!-- HERO -->
+
+    <div class="glass p-4 mb-4">
+
+        <div class="row align-items-center">
+
+            <div class="col-lg-8">
+
+                <div class="hero-badge">
+                    <i class="bi bi-speedometer2"></i>
+                    Creator Dashboard
+                </div>
+
+                <h1 class="dashboard-title mt-3">
+                    Welcome back, {{ current_user.username }}
+                </h1>
+
+                <p class="dashboard-subtitle mb-0">
+                    Manage your content, monitor performance and grow your audience.
+                </p>
+
+            </div>
+
+            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+
+                <a
+                    href="{{ url_for('video.upload') }}"
+                    class="liquid-btn primary">
+
+                    <i class="bi bi-cloud-arrow-up"></i>
+
+                    Upload Video
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- STATS -->
+
+    <div class="row g-4 mb-5">
+
+        <div class="col-lg-4">
+
+            <div class="glass stat-card text-center">
+
+                <h2>{{ stats.videos }}</h2>
+
+                <p class="mb-0">Videos</p>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="glass stat-card text-center">
+
+                <h2>{{ stats.views }}</h2>
+
+                <p class="mb-0">Views</p>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="glass stat-card text-center">
+
+                <h2>{{ stats.storage }}</h2>
+
+                <p class="mb-0">Storage</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- LIBRARY HEADER -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="section-title mb-1">
+
+                My Library
+
+            </h2>
+
+            <p class="section-subtitle mb-0">
+
+                {{ videos|length }} Videos
+
+            </p>
+
+        </div>
+
+    </div>
+
+    {% if videos %}
+
+    <div class="row g-4">
+
+<div class="row g-4 mt-2">
+
+{% for video in videos %}
+
+<div class="col-lg-4 col-md-6">
+
+    <div class="glass video-card">
+
+        {% if video.thumbnail_filename %}
+        <a href="{{ url_for('stream.stream_video', video_id=video.id) }}">
+            <img
+                class="video-thumb"
+                src="{{ url_for('stream.thumbnail', filename=video.thumbnail_filename) }}"
+                alt="{{ video.title }}">
+        </a>
+        {% endif %}
+
+        <div class="video-card-body">
+
+            <div class="video-tags">
+
+                <span class="badge bg-primary">
+                    {{ video.category }}
+                </span>
+
+                <span class="badge bg-secondary">
+                    {{ video.visibility|capitalize }}
+                </span>
+
+            </div>
+
+            <h5 class="video-title">
+                {{ video.title }}
+            </h5>
+
+            <p class="video-description">
+                {{ video.description[:95] if video.description else "No description available." }}
+            </p>
+
+            <div class="video-info">
+
+                <span>
+                    <i class="bi bi-eye"></i>
+                    {{ video.views }}
+                </span>
+
+                <span>
+                    {{ video.created_at.strftime("%d %b %Y") }}
+                </span>
+
+            </div>
+
+            <div class="video-actions">
+
+                <a
+                    href="{{ url_for('stream.stream_video', video_id=video.id) }}"
+                    class="btn btn-primary btn-sm flex-fill">
+
+                    <i class="bi bi-play-fill"></i>
+
+                    Watch
+
+                </a>
+
+                <form
+                    method="POST"
+                    action="{{ url_for('video.delete', video_id=video.id) }}"
+                    onsubmit="return confirm('Delete this video permanently?');">
+
+                    <button
+                        type="submit"
+                        class="btn btn-outline-danger btn-sm">
+
+                        <i class="bi bi-trash"></i>
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+    </div>
+
+    {% else %}
+
+    <div class="glass p-5 text-center">
+
+        <i
+            class="bi bi-camera-video display-3 text-secondary">
+        </i>
+
+        <h3 class="mt-4">
+
+            Your Library is Empty
+
+        </h3>
+
+        <p class="text-secondary">
+
+            Upload your first video and start building your streaming collection.
+
+        </p>
+
+        <a
+            href="{{ url_for('video.upload') }}"
+            class="liquid-btn primary">
+
+            <i class="bi bi-cloud-arrow-up"></i>
+
+            Upload Video
+
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

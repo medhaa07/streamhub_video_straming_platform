@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}
+StreamHub
+{% endblock %}
+
+{% block content %}
+
+{% if videos %}
+
+{% set featured = videos[0] %}
+
+<section class="hero-banner">
+
+    <img
+        src="{{ url_for('stream.thumbnail', filename=featured.thumbnail_filename) }}"
+        alt="{{ featured.title }}"
+        class="hero-bg">
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+
+        <span class="hero-tag">
+            StreamHub Originals
+        </span>
+
+        <h1>
+            {{ featured.title }}
+        </h1>
+
+        {% if featured.description %}
+
+        <p>
+            {{ featured.description[:180] }}{% if featured.description|length > 180 %}...{% endif %}
+        </p>
+
+        {% else %}
+
+        <p>
+            Watch this featured video on StreamHub.
+        </p>
+
+        {% endif %}
+
+        <div class="hero-meta">
+
+            <span>
+                <i class="bi bi-eye-fill"></i>
+                {{ featured.views }} views
+            </span>
+
+            <span>•</span>
+
+            <span>
+                {{ featured.category }}
+            </span>
+
+        </div>
+
+        <div class="hero-buttons">
+
+            <a
+                href="{{ url_for('stream.stream_video', video_id=featured.id) }}"
+                class="hero-play">
+
+                <i class="bi bi-play-fill"></i>
+
+                Watch Now
+
+            </a>
+
+            <a
+href="{{ url_for('stream.stream_video', video_id=featured.id) }}"                class="hero-info">
+
+                <i class="bi bi-info-circle"></i>
+
+                More Info
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<div class="section-header mt-5">
+
+    <h2 class="section-title">
+
+        {% if search_query %}
+
+            Search Results for "{{ search_query }}"
+
+        {% else %}
+
+            Latest Videos
+
+        {% endif %}
+
+    </h2>
+
+    <p class="section-subtitle">
+
+        {{ videos|length }} Videos Available
+
+    </p>
+
+</div>
+
+
+
+{% if videos %}
+
+<div class="row g-4" id="videos">
+
+    {% for video in videos %}
+
+<div class="col-lg-4 col-md-6">
+
+    <div class="video-card glass">
+
+    <a href="{{ url_for('stream.stream_video', video_id=video.id) }}">
+        <img
+            class="video-thumb"
+            src="{{ url_for('stream.thumbnail', filename=video.thumbnail_filename) }}"
+            alt="{{ video.title }}">
+    </a>
+
+    <div class="video-card-body">
+
+        <div class="video-tags">
+            <span class="tag">{{ video.category }}</span>
+            <span class="tag">{{ video.visibility|capitalize }}</span>
+        </div>
+
+        <h5 class="video-title">
+            {{ video.title }}
+        </h5>
+
+        <p class="video-description">
+            {{ video.description[:100] if video.description else "No description available." }}
+        </p>
+
+        <div class="video-meta">
+            <span>
+                <i class="bi bi-eye"></i>
+                {{ video.views }} views
+            </span>
+
+            <span>
+                {{ video.created_at.strftime("%d %b %Y") }}
+            </span>
+        </div>
+
+        <div class="video-actions">
+
+            <a
+                href="{{ url_for('stream.stream_video', video_id=video.id) }}"
+                class="btn btn-primary btn-sm">
+                <i class="bi bi-play-fill"></i>
+                Watch
+            </a>
+
+            <form
+                method="POST"
+                action="{{ url_for('video.delete', video_id=video.id) }}"
+                onsubmit="return confirm('Delete this video permanently?');">
+
+                <button
+                    type="submit"
+                    class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-trash"></i>
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty-state glass text-center p-5 mt-5">
+
+    {% if search_query %}
+
+    <h3>
+        No videos found
+    </h3>
+
+    <p>
+        Try another search.
+    </p>
+
+    {% else %}
+
+    <h3>
+        No videos uploaded yet
+    </h3>
+
+    <p>
+        Upload your first video to begin building your collection.
+    </p>
+
+    <a
+        href="{{ url_for('video.upload') }}"
+        class="liquid-btn primary mt-3">
+
+        <i class="bi bi-cloud-upload"></i>
+
+        Upload Video
+
+    </a>
+
+    {% endif %}
+
+</div>
+
+{% endif %}
+
+{% endblock %}
